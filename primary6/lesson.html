@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لميناهالك | السادس الابتدائيtitle>
+    <title>لميناهالك | السادس الابتدائي</title>
     <link rel="icon" href="./images/logo.png" type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" />
@@ -411,13 +411,7 @@
             position: relative;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
         }
-        .video-overlay .video-container video {
-            width: 100%;
-            height: auto;
-            max-height: 70vh;
-            display: block;
-            background: #000;
-        }
+        .video-overlay .video-container iframe { display: block; }
         .video-overlay .close-video {
             position: absolute;
             top: 10px;
@@ -488,89 +482,6 @@
             to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* ===== VIDEO CONTROLS ===== */
-        .video-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            flex-wrap: wrap;
-        }
-        .video-controls button {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1rem;
-            cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 8px;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-        .video-controls button:hover { background: rgba(255, 255, 255, 0.15); }
-        .video-controls input[type="range"] {
-            flex: 1;
-            min-width: 60px;
-            height: 4px;
-            -webkit-appearance: none;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 4px;
-            outline: none;
-            cursor: pointer;
-        }
-        .video-controls input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-        }
-        .video-controls .time-display {
-            color: #fff;
-            font-size: 0.8rem;
-            font-weight: 500;
-            min-width: 90px;
-            text-align: center;
-            flex-shrink: 0;
-        }
-        .video-controls .speed-control {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            font-family: inherit;
-            transition: 0.3s;
-            flex-shrink: 0;
-        }
-        .video-controls .volume-control {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-        .video-controls .volume-control input[type="range"] { width: 60px; min-width: 40px; }
-        .video-controls .quality-select {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #fff;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            font-family: inherit;
-            flex-shrink: 0;
-        }
-        .video-controls .quality-select option { background: #222; color: #fff; }
-
         /* ===== RESPONSIVE ===== */
         @media (max-width: 992px) {
             .layout { grid-template-columns: 1fr; }
@@ -598,7 +509,6 @@
             .lesson-card .lesson-info h3 { font-size: 0.9rem; }
             .enroll-card { padding: 22px 20px; border-radius: 20px; }
             .video-overlay { padding: 10px; }
-            .video-controls { padding: 8px 10px; gap: 6px; }
         }
         @media (max-width: 480px) {
             .main-content { padding: 16px 10px 40px; }
@@ -608,12 +518,9 @@
             .lesson-card { padding: 12px 10px; gap: 10px; }
             .lesson-card .lesson-num { width: 32px; height: 32px; font-size: 0.8rem; }
             .enroll-card { padding: 18px 16px; border-radius: 18px; }
-            .video-controls .volume-control input[type="range"] { display: none; }
-            .video-controls .quality-select { display: none; }
         }
         @media (max-width: 360px) {
             .lesson-card .lesson-status { display: none; }
-            .video-controls .speed-control { display: none; }
         }
     </style>
 </head>
@@ -640,7 +547,7 @@
                         <i class="fas fa-book"></i>
                     </div>
                     <div class="hero-body">
-                        <span class="badge" id="courseBadge">كورس</span>
+                        <span class="badge" id="courseBadge">السادس الابتدائي</span>
                         <h1 id="courseTitle">جاري التحميل...</h1>
                         <div class="teacher-row">
                             <span class="t-avatar" id="teacherInitial">م</span>
@@ -703,23 +610,11 @@
             <button class="close-video" onclick="closeVideo()">
                 <i class="fas fa-times"></i> إغلاق
             </button>
-            <video id="videoPlayer" controls playsinline>
-                <source src="" type="video/mp4">
-                المتصفح لا يدعم تشغيل الفيديو.
-            </video>
-            <div class="video-controls" id="videoControls">
-                <button onclick="togglePlay()" id="playBtn"><i class="fas fa-play"></i></button>
-                <input type="range" id="progressBar" value="0" step="0.01" />
-                <span class="time-display" id="timeDisplay">00:00 / 00:00</span>
-                <div class="volume-control">
-                    <button onclick="toggleMute()"><i class="fas fa-volume-up" id="volumeIcon"></i></button>
-                    <input type="range" id="volumeBar" min="0" max="1" step="0.05" value="1" />
-                </div>
-                <button onclick="changeSpeed()" class="speed-control" id="speedBtn">1x</button>
-                <select class="quality-select" id="qualitySelect" onchange="changeQuality(this.value)">
-                    <option value="auto">جودة تلقائية</option>
-                </select>
-                <button onclick="toggleFullscreen()"><i class="fas fa-expand"></i></button>
+            <div id="videoFrameWrapper" style="position:relative; width:100%; padding-bottom:56.25%; background:#000;">
+                <iframe id="videoFrame"
+                        style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
             </div>
             <div class="video-title" id="videoTitle"></div>
         </div>
@@ -743,7 +638,7 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // ✅ رقم الدعم الجديد (بصيغة دولية لـ wa.me)
+        // ✅ رقم الدعم (بصيغة دولية لـ wa.me)
         const SUPPORT_PHONE = "201229931647";
 
         let currentUser = null;
@@ -751,10 +646,10 @@
         let currentCourse = null;
         let teacherName = 'مدرس';
         let allLessons = [];
-        let currentVideoElement = null;
-        let currentSpeed = 1;
-        let isDragging = false;
 
+        // ============================================================
+        //  HELPERS
+        // ============================================================
         function showLoading(show = true) {
             let loader = document.querySelector('.loading-overlay');
             if (show) {
@@ -804,11 +699,42 @@
         function isVideoUrl(url) {
             if (!url) return false;
             const videoPatterns = [
-                'youtube.com/watch', 'youtu.be/', 'youtube.com/embed',
-                'vimeo.com', 'drive.google.com/file/d', 'player.vimeo',
-                'streamable.com', '.mp4', '.webm', '.mov', 'video'
+                'drive.google.com/file/d', 'drive.google.com/open',
+                '.mp4', '.webm', '.mov', 'video'
             ];
             return videoPatterns.some(pattern => url.toLowerCase().includes(pattern));
+        }
+
+        // ✅ استخراج ID ملف Google Drive من أي شكل من أشكال الرابط
+        function extractDriveId(url) {
+            if (!url) return '';
+            const patterns = [
+                /drive\.google\.com\/file\/d\/([^\/\n?#]+)/,
+                /drive\.google\.com\/open\?id=([^&\n?#]+)/,
+                /drive\.google\.com\/uc\?(?:export=download&)?id=([^&\n?#]+)/
+            ];
+            for (const p of patterns) {
+                const m = url.match(p);
+                if (m && m[1]) return m[1];
+            }
+            return '';
+        }
+
+        // ✅ فحص اشتراك الطالب في الكورس
+        async function checkSubscription(cid) {
+            if (!currentUser) return false;
+            try {
+                const snapshot = await db.collection('subscriptions')
+                    .where('studentId', '==', currentUser.uid)
+                    .where('courseId', '==', cid)
+                    .where('status', '==', 'active')
+                    .limit(1)
+                    .get();
+                return !snapshot.empty;
+            } catch (err) {
+                console.error('Subscription check error:', err);
+                return false;
+            }
         }
 
         function getCourseId() {
@@ -833,6 +759,9 @@
             }
         }
 
+        // ============================================================
+        //  LOAD COURSE
+        // ============================================================
         async function loadCourse() {
             const doc = await db.collection("courses").doc(courseId).get();
             if (!doc.exists) {
@@ -881,6 +810,9 @@
             document.title = `لميناهالك • ${currentCourse.title || 'الكورس'}`;
         }
 
+        // ============================================================
+        //  LOAD LESSONS
+        // ============================================================
         async function loadLessons() {
             try {
                 const snapshot = await db.collection("lessons")
@@ -946,156 +878,93 @@
             }).join('');
         }
 
-        function openLesson(lessonId) {
+        // ============================================================
+        //  OPEN LESSON (with subscription check)
+        // ============================================================
+        async function openLesson(lessonId) {
             const lesson = allLessons.find(l => l.id === lessonId);
             if (!lesson) { showCustomAlert('error', 'خطأ', 'الدرس غير موجود'); return; }
+
             const mediaUrl = lesson.mediaUrl || lesson.videoUrl || lesson.fileUrl || '';
             if (!mediaUrl) { showCustomAlert('warning', 'تنبيه', 'لا يوجد رابط لهذا المحتوى'); return; }
-            if (isVideoUrl(mediaUrl)) { openVideoPlayer(mediaUrl, lesson.title || 'فيديو'); return; }
-            if (mediaUrl.startsWith('http')) { window.location.href = mediaUrl; return; }
+
+            // ✅ 1) لو الدرس مش مجاني → نتأكد إن الطالب مشترك
+            if (!lesson.isFree) {
+                showLoading(true);
+                const isSubscribed = await checkSubscription(courseId);
+                showLoading(false);
+
+                if (!isSubscribed) {
+                    showCustomAlert(
+                        'warning',
+                        '🔒 المحتوى مقفول',
+                        'الدرس ده متاح للمشتركين فقط.\nاشترك في الكورس عشان تقدر تشوفه.',
+                        () => {
+                            const msg = encodeURIComponent(`أهلاً، عايز أشترك في كورس "${currentCourse?.title || ''}"`);
+                            window.open(`https://wa.me/${SUPPORT_PHONE}?text=${msg}`, '_blank');
+                        }
+                    );
+                    return;
+                }
+            }
+
+            // ✅ 2) عرض المحتوى
+            // لو Google Drive → نعرضه في iframe على طول
+            const driveId = extractDriveId(mediaUrl);
+            if (driveId) {
+                openDrivePlayer(driveId, lesson.title || 'فيديو');
+                return;
+            }
+
+            // روابط فيديو عادية (mp4/webm/mov) → تفتح في تاب جديد
+            if (mediaUrl.match(/\.(mp4|webm|mov)(\?.*)?$/i)) {
+                window.open(mediaUrl, '_blank');
+                return;
+            }
+
+            // أي رابط تاني (Meet/Zoom/PDF...) → يفتح في تاب جديد
+            if (mediaUrl.startsWith('http')) {
+                window.open(mediaUrl, '_blank');
+                return;
+            }
+
             showCustomAlert('warning', 'تنبيه', 'نوع المحتوى غير معروف');
         }
 
-        function openVideoPlayer(videoUrl, title) {
-            if (!isVideoUrl(videoUrl)) { window.location.href = videoUrl; return; }
+        // ============================================================
+        //  IFRAME PLAYER (للدرايف)
+        // ============================================================
+        function openIframePlayer(src, title) {
             const overlay = document.getElementById('videoOverlay');
-            const video = document.getElementById('videoPlayer');
+            const iframe = document.getElementById('videoFrame');
             const titleEl = document.getElementById('videoTitle');
-            video.src = videoUrl;
-            video.load();
-            titleEl.textContent = title || 'فيديو';
-            document.getElementById('speedBtn').textContent = '1x';
-            currentSpeed = 1;
-            video.playbackRate = 1;
-            document.getElementById('progressBar').value = 0;
-            document.getElementById('timeDisplay').textContent = '00:00 / 00:00';
-            document.getElementById('playBtn').innerHTML = '<i class="fas fa-pause"></i>';
 
-            const qualitySelect = document.getElementById('qualitySelect');
-            qualitySelect.innerHTML = '<option value="auto">جودة تلقائية</option>';
-            ['1080p', '720p', '480p', '360p'].forEach(q => {
-                const opt = document.createElement('option');
-                opt.value = q; opt.textContent = q;
-                qualitySelect.appendChild(opt);
-            });
+            iframe.src = src;
+            titleEl.textContent = title || 'فيديو';
 
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
-            video.play().catch(() => {});
-            currentVideoElement = video;
-            setupVideoControls(video);
+        }
+
+        // ✅ عرض فيديو الدرايف في iframe مباشرة
+        function openDrivePlayer(driveId, title) {
+            openIframePlayer(
+                `https://drive.google.com/file/d/${driveId}/preview`,
+                title
+            );
         }
 
         function closeVideo() {
             const overlay = document.getElementById('videoOverlay');
-            const video = document.getElementById('videoPlayer');
-            video.pause();
-            video.src = '';
-            video.load();
+            const iframe = document.getElementById('videoFrame');
+            iframe.src = ''; // يوقف الفيديو فورًا
             overlay.classList.remove('active');
             document.body.style.overflow = '';
-            currentVideoElement = null;
         }
 
-        function setupVideoControls(video) {
-            const progressBar = document.getElementById('progressBar');
-            const timeDisplay = document.getElementById('timeDisplay');
-            const playBtn = document.getElementById('playBtn');
-            const volumeBar = document.getElementById('volumeBar');
-            const volumeIcon = document.getElementById('volumeIcon');
-
-            video.addEventListener('timeupdate', () => {
-                if (!isDragging) {
-                    const progress = (video.currentTime / video.duration) * 100;
-                    progressBar.value = progress;
-                }
-                updateTimeDisplay(video, timeDisplay);
-            });
-            video.addEventListener('loadedmetadata', () => {
-                updateTimeDisplay(video, timeDisplay);
-                progressBar.max = 100;
-            });
-            progressBar.addEventListener('input', (e) => {
-                isDragging = true;
-                const value = parseFloat(e.target.value);
-                const time = (value / 100) * video.duration;
-                video.currentTime = time;
-                updateTimeDisplay(video, timeDisplay);
-            });
-            progressBar.addEventListener('change', () => { isDragging = false; });
-            playBtn.addEventListener('click', togglePlay);
-            video.addEventListener('click', togglePlay);
-            video.addEventListener('play', () => { playBtn.innerHTML = '<i class="fas fa-pause"></i>'; });
-            video.addEventListener('pause', () => { playBtn.innerHTML = '<i class="fas fa-play"></i>'; });
-            volumeBar.addEventListener('input', (e) => {
-                video.volume = parseFloat(e.target.value);
-                updateVolumeIcon(video, volumeIcon);
-            });
-        }
-
-        function togglePlay() {
-            const video = document.getElementById('videoPlayer');
-            if (video.paused) { video.play().catch(() => {}); } else { video.pause(); }
-        }
-
-        function updateTimeDisplay(video, element) {
-            if (!video.duration) return;
-            const current = formatTime(video.currentTime);
-            const total = formatTime(video.duration);
-            element.textContent = `${current} / ${total}`;
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds) || !isFinite(seconds)) return '00:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
-
-        function toggleMute() {
-            const video = document.getElementById('videoPlayer');
-            video.muted = !video.muted;
-            const icon = document.getElementById('volumeIcon');
-            icon.className = video.muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
-        }
-
-        function updateVolumeIcon(video, icon) {
-            if (video.muted) { icon.className = 'fas fa-volume-mute'; }
-            else if (video.volume === 0) { icon.className = 'fas fa-volume-off'; }
-            else if (video.volume < 0.5) { icon.className = 'fas fa-volume-down'; }
-            else { icon.className = 'fas fa-volume-up'; }
-        }
-
-        function changeSpeed() {
-            const video = document.getElementById('videoPlayer');
-            const speedBtn = document.getElementById('speedBtn');
-            const speeds = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-            let index = speeds.indexOf(currentSpeed);
-            index = (index + 1) % speeds.length;
-            currentSpeed = speeds[index];
-            video.playbackRate = currentSpeed;
-            speedBtn.textContent = `${currentSpeed}x`;
-        }
-
-        function changeQuality(quality) {
-            if (quality === 'auto') {
-                showCustomAlert('info', 'جودة تلقائية', 'سيتم اختيار أفضل جودة تلقائيًا');
-            } else {
-                showCustomAlert('info', 'جودة', `تم اختيار جودة ${quality}`);
-            }
-        }
-
-        function toggleFullscreen() {
-            const container = document.getElementById('videoContainer');
-            if (!document.fullscreenElement) {
-                container.requestFullscreen().catch(() => {
-                    document.getElementById('videoPlayer').requestFullscreen().catch(() => {});
-                });
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
+        // ============================================================
+        //  SHARE
+        // ============================================================
         function shareCourse() {
             const url = window.location.href;
             if (navigator.share) {
@@ -1113,6 +982,9 @@
             }
         }
 
+        // ============================================================
+        //  TABS
+        // ============================================================
         function initTabs() {
             const buttons = document.querySelectorAll('.tab-btn');
             buttons.forEach(btn => {
@@ -1126,6 +998,9 @@
             });
         }
 
+        // ============================================================
+        //  USER DATA
+        // ============================================================
         async function loadUserData(uid) {
             try {
                 const doc = await db.collection('users').doc(uid).get();
@@ -1142,6 +1017,9 @@
             if (e.key === 'Escape') { closeVideo(); }
         });
 
+        // ============================================================
+        //  INIT
+        // ============================================================
         async function init() {
             initTabs();
             if (!getCourseId()) return;
@@ -1167,16 +1045,12 @@
             });
         }
 
+        // Window exports
         window.openLesson = openLesson;
         window.goBack = goBack;
         window.shareCourse = shareCourse;
-        window.openVideoPlayer = openVideoPlayer;
+        window.openDrivePlayer = openDrivePlayer;
         window.closeVideo = closeVideo;
-        window.togglePlay = togglePlay;
-        window.toggleMute = toggleMute;
-        window.changeSpeed = changeSpeed;
-        window.changeQuality = changeQuality;
-        window.toggleFullscreen = toggleFullscreen;
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
