@@ -15,6 +15,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-functions-compat.js"></script>
 
     <style>
         /* ===== Reset & Root ===== */
@@ -902,20 +903,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="directUrl">🔗 رابط (Google Meet، Zoom، Teams، YouTube، Drive، أو أي رابط)</label>
+                    <label for="directUrl">🔗 رابط (Google Meet، Zoom، Teams، أو أي رابط)</label>
                     <div class="url-row">
                         <input type="text" id="directUrl" placeholder="https://meet.google.com/... أو https://zoom.us/... أو أي رابط" />
                         <button type="button" class="btn-convert" id="convertDriveBtn">🔄 تحويل الرابط</button>
                     </div>
-                    <div class="hint">📌 أي رابط عادي (Google Meet، Zoom، Teams، YouTube، Drive، أو أي رابط تاني). لو حطيت رابط، هيتم تجاهل الملف اللي تختاره تحت.</div>
+                    <div class="hint">📌 أي رابط عادي (Google Meet، Zoom، Teams، أو أي رابط تاني). لو حطيت رابط، هيتم تجاهل الملف اللي تختاره تحت.</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="fileInput">📁 أو ارفع ملف من جهازك (اختياري)</label>
-                    <input type="file" id="fileInput" accept="video/*,application/pdf,image/*" />
-                    <div class="hint">بيتم الرفع على Cloudinary. يُستخدم فقط لو مفيش رابط مباشر فوق.</div>
-                </div>
-
+            
                 <div id="progressContainer">
                     <div class="progress-info">
                         <span>⏳ جارِ الرفع...</span>
@@ -978,9 +974,10 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const functions = firebase.functions();
 
         // ============================================================
-        //  CLOUDINARY CONFIG
+        //  CLOUDINARY CONFIG (للملفات والصور فقط)
         // ============================================================
         const CLOUDINARY_CLOUD_NAME = "doaipcnvd";
         const CLOUDINARY_UPLOAD_PRESET = "nemo_upload";
@@ -1006,6 +1003,7 @@
         const uploadForm = document.getElementById('uploadForm');
         const directUrlInput = document.getElementById('directUrl');
         const convertDriveBtn = document.getElementById('convertDriveBtn');
+        const videoFileInput = document.getElementById('videoFileInput');
         const fileInput = document.getElementById('fileInput');
         const submitBtn = document.getElementById('submitBtn');
         const progressContainer = document.getElementById('progressContainer');
@@ -1225,7 +1223,7 @@
         }
 
         // ============================================================
-        //  UPLOAD TO CLOUDINARY
+        //  UPLOAD FILE TO CLOUDINARY (PDF/صور)
         // ============================================================
         function uploadFileToCloudinary(file, onProgress) {
             return new Promise((resolve, reject) => {
@@ -1252,13 +1250,44 @@
                             reject(new Error('استجابة غير صالحة من السيرفر'));
                         }
                     } else {
-                        reject(new Error('فشل رفع الملف على Cloudinary'));
+                        reject(new Error('فشل رفع الملف'));
                     }
                 };
 
                 xhr.onerror = () => reject(new Error('خطأ في الاتصال أثناء الرفع'));
                 xhr.send(formData);
             });
+        }
+
+        // ============================================================
+        //  UPLOAD VIDEO (through secure backend function)
+        // ============================================================
+        async function uploadVideo(file, onProgress) {
+            // 1) نقرأ الملف كـ base64
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            onProgress && onProgress(15);
+
+            // 2) نبعته للـ backend function اللي هيتولى الرفع
+            const uploadFn = functions.httpsCallable('uploadVideoToYouTube');
+            const result = await uploadFn({
+                fileName: file.name,
+                mimeType: file.type,
+                fileBase64: base64,
+                title: file.name
+            });
+
+            onProgress && onProgress(100);
+
+            if (!result.data || !result.data.videoId) {
+                throw new Error('فشل رفع الفيديو');
+            }
+            return result.data.videoId;
         }
 
         // ============================================================
@@ -1273,11 +1302,15 @@
             const duration = parseInt(document.getElementById('contentDuration').value) || 0;
             const isFree = document.getElementById('isFreeCheckbox').checked;
             const directUrl = directUrlInput.value.trim();
+            const videoFile = videoFileInput.files[0];
             const file = fileInput.files[0];
 
             if (!courseId) { showAlert('warning', 'تنبيه', 'من فضلك اختر الكورس أولاً'); return; }
             if (!title) { showAlert('warning', 'تنبيه', 'من فضلك اكتب عنوان المحتوى'); return; }
-            if (!directUrl && !file) { showAlert('warning', 'تنبيه', 'لازم تحط رابط أو ترفع ملف'); return; }
+            if (!directUrl && !videoFile && !file) {
+                showAlert('warning', 'تنبيه', 'لازم تحط رابط أو ترفع فيديو أو ملف');
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.classList.add('loading');
@@ -1286,10 +1319,29 @@
 
             try {
                 let finalMediaUrl = '';
+                let videoId = '';
 
                 if (directUrl) {
+                    // رابط مباشر (Meet/Zoom/Drive/أي رابط)
                     finalMediaUrl = convertGoogleDriveUrl(directUrl);
+
+                } else if (videoFile) {
+                    // رفع فيديو (في الخلفية بيتم على استضافة الفيديو الآمنة)
+                    progressContainer.style.display = 'block';
+                    progressBarFill.style.width = '5%';
+                    progressPercent.textContent = '5%';
+
+                    videoId = await uploadVideo(videoFile, (pct) => {
+                        progressBarFill.style.width = pct + '%';
+                        progressPercent.textContent = pct + '%';
+                    });
+
+                    finalMediaUrl = `https://www.youtube.com/watch?v=${videoId}`;
+                    progressBarFill.style.width = '100%';
+                    progressPercent.textContent = '100%';
+
                 } else if (file) {
+                    // ملف عادي (PDF/صورة)
                     progressContainer.style.display = 'block';
                     finalMediaUrl = await uploadFileToCloudinary(file, (pct) => {
                         progressBarFill.style.width = pct + '%';
@@ -1313,6 +1365,7 @@
                     duration,
                     isFree,
                     mediaUrl: finalMediaUrl,
+                    videoId: videoId || null,
                     order: nextOrder,
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
@@ -1329,6 +1382,7 @@
                 progressContainer.style.display = 'none';
                 progressBarFill.style.width = '0%';
                 progressPercent.textContent = '0%';
+                videoFileInput.value = '';
                 fileInput.value = '';
 
                 await loadContentList();
